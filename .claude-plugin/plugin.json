@@ -57,6 +57,11 @@
       "title": "Jev model",
       "description": "TypeSafe Jev model name.",
       "default": "jev-latest"
+    },
+    "baseUrl": {
+      "type": "string",
+      "title": "Jev endpoint",
+      "description": "Decisions endpoint. Leave unset for TypeSafe System One; use https://openrouter.ai/api/alpha/decisions with an OpenRouter key and model typesafe/jev-latest."
     }
   }
 }

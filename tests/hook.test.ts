@@ -68,6 +68,37 @@ describe('hook config', () => {
   });
 });
 
+describe('baseUrl option', () => {
+  it('sends requests to a configured baseUrl, e.g. OpenRouter decisions', async () => {
+    const urls: string[] = [];
+    const bodies: string[] = [];
+    const fetchJev = jevFetch(() => 0.9, bodies);
+    const baseUrl = 'https://openrouter.ai/api/alpha/decisions';
+    const config = {
+      ...resolveHookConfig({ preserveRecentMessages: 1, baseUrl, model: 'typesafe/jev-latest' }),
+      apiKey: 'k',
+    };
+    expect(config.baseUrl).toBe(baseUrl);
+    await compactSession(transcript(), config, async (url, init) => {
+      urls.push(url);
+      return fetchJev(url, init);
+    });
+    expect(urls).toEqual([baseUrl]);
+    expect(JSON.parse(bodies[0]!).model).toBe('typesafe/jev-latest');
+  });
+
+  it('keeps the System One endpoint when baseUrl is unset', async () => {
+    const urls: string[] = [];
+    const config = { ...resolveHookConfig({ preserveRecentMessages: 1 }), apiKey: 'k' };
+    const fetchJev = jevFetch(() => 0.9);
+    await compactSession(transcript(), config, async (url, init) => {
+      urls.push(url);
+      return fetchJev(url, init);
+    });
+    expect(urls).toEqual(['https://api.typesafe.ai/v1/systemone']);
+  });
+});
+
 describe('session message mapping', () => {
   it('returns the engine objects for untouched messages and handle-less copies for rebuilt ones', () => {
     const messages = transcript();
